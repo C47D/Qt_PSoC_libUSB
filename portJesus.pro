@@ -15,6 +15,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp
 
+#ifdef Q_OS_WINDOWS
+LIBS += -L$$PWD libusb-1.0
+#endif
+
 HEADERS  += widget.h
 
 FORMS    += widget.ui

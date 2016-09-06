@@ -1,6 +1,12 @@
 #include "widget.h"
 #include "ui_widget.h"
 
+#ifdef Q_OS_LINUX
+#include "libusb-1.0/libusb.h"
+#elif Q_OS_WINDOWS
+#include "libusb.h"
+#endif
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
