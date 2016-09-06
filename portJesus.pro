@@ -15,9 +15,9 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp
 
-#ifdef Q_OS_WINDOWS
-LIBS += -L$$PWD libusb-1.0
-#endif
+##if defined Q_OS_WINDOWS
+#LIBS += -L$$PWD libusb-1.0
+##endif
 
 HEADERS  += widget.h
 
@@ -25,3 +25,11 @@ FORMS    += widget.ui
 
 RESOURCES += \
     icons.qrc
+
+linux {
+    QMAKE_LFLAGS += -Wl,-rpath,\\$\$ORIGIN
+}
+
+windows {
+    LIBS += -L$$PWD libusb-1.0
+}
