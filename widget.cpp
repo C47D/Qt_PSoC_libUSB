@@ -9,7 +9,7 @@ Widget::Widget(QWidget *parent) :
     ui->buttonState_cB->setText("Push button state");
     ui->scrollBar_lbl->setText("PrISM Density Value");
     ui->state_lbl->setText("Disconnected");
-    ui->state_lbl->setStyleSheet("QLabel {color : red}");
+    ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color : red}");
     ui->density_Slider->setMinimum(0);
     ui->density_Slider->setMaximum(100);
     ui->density_Slider->setTickPosition(QSlider::TicksBelow);
