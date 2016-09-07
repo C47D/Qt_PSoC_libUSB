@@ -3,9 +3,9 @@
 
 #include <QDebug>
 
-#if defined Q_OS_LINUX
+#ifdef Q_OS_LINUX
 #include "libusb-1.0/libusb.h"
-#elif Q_OS_WINDOWS
+#else // Q_OS_WINDOWS
 #include "libusb.h"
 #endif
 
