@@ -45,8 +45,15 @@ Widget::Widget(QWidget *parent) :
      * of the device (connected or disconnected) being
      * the last state the default state
     */
-    ui->connect_pB->setText("Disconnected");
-    ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : red}");
+    ui->connect_pB->setText("Connect");
+    ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : green}");
+
+    /*
+     *
+     *
+    */
+    ui->state_lbl->setText("PSoC Disconnected");
+    ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
 
     /*
      * density Slider
