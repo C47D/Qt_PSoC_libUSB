@@ -21,4 +21,10 @@ Check the wiki for more information.
 ## #endif
 
 Ubuntu:
+
 ![alt tag](USB_Ubuntu.png)
+
+
+Windows:
+
+![alt tag](USB_Windows.png)
