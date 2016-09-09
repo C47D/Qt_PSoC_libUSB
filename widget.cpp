@@ -18,17 +18,48 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    /* Setup the contents of the GUI */
+    /********** Setup GUI visual contents **********/
+
+    /*
+     * buttonState Check Button:
+     * this check button let us know the state
+     * of the onboard switch button of the
+     * development kit.
+    */
     ui->buttonState_cB->setText("Push button state");
+
+    /*
+     * scrollBar Label
+     * This is just a label to
+     * display a text, nothing fancy here
+    */
     ui->scrollBar_lbl->setText("PrISM Density Value");
-    ui->state_lbl->setText("Disconnected");
-    ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color : red}");
+
+    /*
+     * connect Push Button
+     * This button will allow us to
+     * connect and disconnect the USB device to
+     * the application.
+     * Acquire and release in libUSB terms, it will
+     * also display a text, which will be the state
+     * of the device (connected or disconnected) being
+     * the last state the default state
+    */
+    ui->connect_pB->setText("Disconnected");
+    ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : red}");
+
+    /*
+     * density Slider
+     * this slider will let us control the
+     * brightness of the onboard LED of the kit.
+    */
     ui->density_Slider->setMinimum(0);
     ui->density_Slider->setMaximum(100);
     ui->density_Slider->setTickPosition(QSlider::TicksBelow);
     ui->density_Slider->setTickInterval(5);
 
-    /* Connect signals and slots */
+
+    /********** Connect signals and slots **********/
 
     // Sender : Slider
     // Signal : Value changed
