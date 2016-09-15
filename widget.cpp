@@ -9,8 +9,8 @@
 #include "libusb.h"
 #endif
 
-/* Functions */
-static void printSliderState();
+/********** Variables and flags **********/
+bool isConnectedFlag = false;
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -65,7 +65,6 @@ Widget::Widget(QWidget *parent) :
     ui->density_Slider->setTickPosition(QSlider::TicksBelow);
     ui->density_Slider->setTickInterval(5);
 
-
     /********** Connect signals and slots **********/
 
     // Sender : Slider
@@ -74,9 +73,11 @@ Widget::Widget(QWidget *parent) :
     // Slot (simple function): printSliderState
     // New way to connect signals and slot, in this case
     // connecting to a simple function
-    QObject::connect(ui->density_Slider,
-                     &QSlider::valueChanged,
-                     printSliderState);
+    connect(ui->connect_pB,
+            &QPushButton::clicked,
+            this,
+            &Widget::connect2USB);
+
 }
 
 Widget::~Widget()
@@ -84,7 +85,16 @@ Widget::~Widget()
     delete ui;
 }
 
-static void printSliderState()
+void Widget::connect2USB()
 {
-    qDebug() << "El slider cambio de posicion";
+    qDebug() << "In like flyn";
+    result = libusb_init(NULL);
+    qDebug() << result;
+    if(0 != result){
+        ui->state_lbl->setText("Unable to connect");
+        ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
+    }
+    ui->state_lbl->setText("Connected");
+    ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: green}");
+
 }

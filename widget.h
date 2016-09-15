@@ -15,8 +15,14 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
+    /* Slots */
+    void connect2USB();
+
 private:
     Ui::Widget *ui;
+
+    int result;
+
 };
 
 #endif // WIDGET_H
