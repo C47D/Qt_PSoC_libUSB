@@ -9,9 +9,6 @@
 #include "libusb.h"
 #endif
 
-/********** Variables and flags **********/
-bool isConnectedFlag = false;
-
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
@@ -67,12 +64,6 @@ Widget::Widget(QWidget *parent) :
 
     /********** Connect signals and slots **********/
 
-    // Sender : Slider
-    // Signal : Value changed
-    // Receiver : NA
-    // Slot (simple function): printSliderState
-    // New way to connect signals and slot, in this case
-    // connecting to a simple function
     connect(ui->connect_pB,
             &QPushButton::clicked,
             this,
@@ -87,9 +78,8 @@ Widget::~Widget()
 
 void Widget::connect2USB()
 {
-    qDebug() << "In like flyn";
     result = libusb_init(NULL);
-    qDebug() << result;
+
     if(0 != result){
         ui->state_lbl->setText("Unable to connect");
         ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
