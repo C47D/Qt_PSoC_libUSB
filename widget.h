@@ -17,6 +17,8 @@ public:
 
     /* Slots */
     void connect2USB();
+    void sendSliderValue();
+    bool getPushButtonValue();
 
 private:
     Ui::Widget *ui;

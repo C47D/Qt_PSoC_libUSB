@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 
 #include <QDebug>
+#include <QTimer>
 
 #ifdef Q_OS_LINUX
 #include "libusb-1.0/libusb.h"
@@ -58,9 +59,10 @@ Widget::Widget(QWidget *parent) :
      * brightness of the onboard LED of the kit.
     */
     ui->density_Slider->setMinimum(0);
-    ui->density_Slider->setMaximum(100);
+    ui->density_Slider->setMaximum(255);
     ui->density_Slider->setTickPosition(QSlider::TicksBelow);
     ui->density_Slider->setTickInterval(5);
+    ui->density_Slider->setEnabled(false);
 
     /********** Connect signals and slots **********/
 
@@ -68,6 +70,11 @@ Widget::Widget(QWidget *parent) :
             &QPushButton::clicked,
             this,
             &Widget::connect2USB);
+
+    connect(ui->density_Slider,
+            &QSlider::valueChanged,
+            this,
+            &Widget::sendSliderValue);
 
 }
 
@@ -81,10 +88,22 @@ void Widget::connect2USB()
     result = libusb_init(NULL);
 
     if(0 != result){
-        ui->state_lbl->setText("Unable to connect");
+        ui->state_lbl->setText("Unable to init libUSB");
         ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
     }
+
+    ui->density_Slider->setEnabled(true);
     ui->state_lbl->setText("Connected");
     ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: green}");
 
+}
+
+void Widget::sendSliderValue()
+{
+    qDebug() << "Slot del cambio de valor del slider" ;
+}
+
+bool Widget::getPushButtonValue()
+{
+    return true;
 }
