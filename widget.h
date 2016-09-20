@@ -18,11 +18,11 @@ public:
     /* Slots */
     void connect2USB();
     void sendSliderValue();
-    bool getPushButtonValue();
+    void getPushButtonValue();
 
 private:
     Ui::Widget *ui;
-
+    QTimer *timer;
     int result;
 
 };

@@ -16,6 +16,9 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    /***** QTimer Setuo *****/
+    timer = new QTimer(this);
+
     /********** Setup GUI visual contents **********/
 
     /*
@@ -76,6 +79,11 @@ Widget::Widget(QWidget *parent) :
             this,
             &Widget::sendSliderValue);
 
+    connect(timer,
+            &QTimer::timeout,
+            this,
+            &Widget::getPushButtonValue);
+
 }
 
 Widget::~Widget()
@@ -93,17 +101,20 @@ void Widget::connect2USB()
     }
 
     ui->density_Slider->setEnabled(true);
+    timer->start(10);
     ui->state_lbl->setText("Connected");
     ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: green}");
 
+    ui->connect_pB->setText("Disconnect");
+    ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : red}");
 }
 
 void Widget::sendSliderValue()
 {
-    qDebug() << "Slot del cambio de valor del slider" ;
+    qDebug() << "Slot del cambio de valor del slider";
 }
 
-bool Widget::getPushButtonValue()
+void Widget::getPushButtonValue()
 {
-    return true;
+    qDebug() << "Timer timeout";
 }
