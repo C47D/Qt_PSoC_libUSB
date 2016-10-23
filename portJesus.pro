@@ -26,9 +26,6 @@ linux {
     QMAKE_LFLAGS += -Wl,-rpath,\\$\$ORIGIN
 
     unix:!macx: LIBS += -lusb-1.0
-    INCLUDEPATH += -L$$PWD libusb-1.0
-    DEPENDPATH += -L$$PWD libusb-1.0
-#    unix:!macx: PRE_TARGETDEPS += $$PWD libusb.a
 }
 
 windows {

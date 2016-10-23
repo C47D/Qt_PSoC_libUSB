@@ -84,29 +84,46 @@ Widget::Widget(QWidget *parent) :
             this,
             &Widget::getPushButtonValue);
 
+    this->isConnected = false;
+
 }
 
 Widget::~Widget()
 {
     delete ui;
+    /*
+     * Nos debemos asegurar de que nos
+     * desconectamos de libusb
+     */
 }
 
 void Widget::connect2USB()
-{
-    result = libusb_init(NULL);
+{    
+    if(this->isConnected == true){
+        /*
+         * Si ya estabamos conectados entonces el clic
+         * es para desconectarnos
+        */
+        timer->stop();
+        this->isConnected = false;
+    }else{
+        result = libusb_init(NULL);
 
-    if(0 != result){
-        ui->state_lbl->setText("Unable to init libUSB");
-        ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
+        if(0 != result){
+            ui->state_lbl->setText("Unable to init libUSB");
+            ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
+        }
+
+        ui->density_Slider->setEnabled(true);
+        timer->start(10);
+        ui->state_lbl->setText("Connected");
+        ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: green}");
+
+        ui->connect_pB->setText("Disconnect");
+        ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : red}");
+
+        this->isConnected = true;
     }
-
-    ui->density_Slider->setEnabled(true);
-    timer->start(10);
-    ui->state_lbl->setText("Connected");
-    ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: green}");
-
-    ui->connect_pB->setText("Disconnect");
-    ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : red}");
 }
 
 void Widget::sendSliderValue()

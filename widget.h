@@ -24,7 +24,7 @@ private:
     Ui::Widget *ui;
     QTimer *timer;
     int result;
-
+    bool isConnected;
 };
 
 #endif // WIDGET_H
