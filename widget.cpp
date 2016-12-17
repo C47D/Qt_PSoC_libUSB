@@ -84,15 +84,12 @@ void Widget::error(QString s, int err)
 void Widget::connect2USB()
 {    
     if (this->isConnected == true) {
-        // Si ya estabamos conectados entonces el clic
-        // es para desconectarnos
         ui->density_Slider->setEnabled(false);
         ui->state_lbl->setText("Disconnected");
         ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
         ui->connect_pB->setText("Connect");
         ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : green}");
         timer->stop();
-        qDebug() << "Timer Detenido";
         this->isConnected = false;
         closeUSB();
     } else {
