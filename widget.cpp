@@ -2,13 +2,6 @@
 #include "ui_widget.h"
 
 #include <QDebug>
-#include <QTimer>
-
-#ifdef Q_OS_LINUX
-#include "libusb-1.0/libusb.h"
-#else // Q_OS_WINDOWS
-#include "libusb.h"
-#endif
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -25,6 +18,7 @@ Widget::Widget(QWidget *parent) :
     // this check button let us know the state
     // of the onboard switch button of the
     // development kit.
+    ui->buttonState_cB->setCheckable(false);
     ui->buttonState_cB->setText("Push button state");
 
     // scrollBar Label
@@ -72,22 +66,24 @@ Widget::Widget(QWidget *parent) :
             this,
             &Widget::getPushButtonValue);
 
-    this->isConnected = false;
-
 }
 
 Widget::~Widget()
 {
     delete ui;
+    // Nos debemos asegurar de desconectar de libusb
+    closeUSB();
+}
 
-    // Nos debemos asegurar de que nos desconectamos de libusb
-
+void Widget::error(QString s, int err)
+{
+    qDebug() << s << " Error: " << libusb_error_name(err);
+    //exit(err);
 }
 
 void Widget::connect2USB()
 {    
-    if(this->isConnected == true){
-
+    if (this->isConnected == true) {
         // Si ya estabamos conectados entonces el clic
         // es para desconectarnos
         ui->density_Slider->setEnabled(false);
@@ -95,17 +91,33 @@ void Widget::connect2USB()
         ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
         ui->connect_pB->setText("Connect");
         ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : green}");
-
         timer->stop();
         qDebug() << "Timer Detenido";
-
         this->isConnected = false;
-    }else{
-        result = libusb_init(NULL);
-
-        if(0 != result){
+        closeUSB();
+    } else {
+        libusb_init(NULL);
+        if (0 > result) {
             ui->state_lbl->setText("Unable to init libUSB");
             ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
+            error("Cannot init libUSB!", err);
+        }
+
+        usb_handle = libusb_open_device_with_vid_pid(NULL, usbVID, usbPID);
+        if (NULL == usb_handle) {
+            ui->state_lbl->setText("Unable to init libUSB");
+            ui->state_lbl->setStyleSheet("QLabel {font-weight: bold; color: red}");
+            error("Cannot open the device!", err);
+        }
+
+        err = libusb_claim_interface(usb_handle, 0);
+        if (err) {
+            error("Cannot claim interface", err);
+        }
+
+        err = libusb_set_interface_alt_setting(usb_handle, 0, 0);
+        if (err) {
+            error("Cannot set alt setting!", err);
         }
 
         ui->density_Slider->setEnabled(true);
@@ -114,18 +126,56 @@ void Widget::connect2USB()
         ui->connect_pB->setText("Disconnect");
         ui->connect_pB->setStyleSheet("QPushButton {font-weight: bold; color : red}");
 
-        timer->start(10);
+        //timer->start(100); // 100 ms timer
 
         this->isConnected = true;
     }
 }
 
+void Widget::closeUSB()
+{
+    libusb_release_interface(usb_handle, 0);
+    libusb_close(usb_handle);
+    libusb_exit(NULL);
+}
+
 void Widget::sendSliderValue()
 {
-    qDebug() << "Slot del cambio de valor del slider";
+    //timer->stop();
+    /* send the slider value to control the onboard LED */
+    sliderPosition[0] = ui->density_Slider->value();
+
+    err = libusb_interrupt_transfer(usb_handle,
+                                    LIBUSB_ENDPOINT_OUT | OUT_ENDPOINT,
+                                    &sliderPosition[0],
+                                    sizeof(sliderPosition),
+                                    &transfer_size,
+                                    250);
+
+    qDebug() << "Bytes transferidos: " << transfer_size;
+
+    if (err) {
+        error("OUT Interrupt transfer failed!", err);
+    }
+    //timer->start();
 }
 
 void Widget::getPushButtonValue()
 {
-    qDebug() << "Timer timeout";
+    //timer->stop();
+    /* Request the state of the onboard push button */
+    err = libusb_interrupt_transfer(usb_handle,
+                                    LIBUSB_ENDPOINT_IN | IN_ENDPOINT,
+                                    &buttonState[0],
+                                    2,
+                                    &transfer_size,
+                                    2500);
+
+    qDebug() << "Bytes recibidos: " << transfer_size;
+    ui->buttonState_cB->setCheckState(( buttonState[0] != 0 ? Qt::Checked : Qt::Unchecked ));
+
+    if (err) {
+        error("IN Interrupt transfer failed!", err);
+    }
+    //timer->start();
 }
